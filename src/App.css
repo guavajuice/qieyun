@@ -1,0 +1,326 @@
+/* 字典查询网站样式 */
+
+/* 打赏按钮样式 */
+.donation-buttons {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.alipay-donation {
+  position: relative;
+}
+
+.wechat-donation {
+  position: relative;
+}
+
+.alipay-donation .donation-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #1677FF;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.alipay-donation .donation-button:hover {
+  background: #095BDE;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.wechat-donation .donation-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #07C160;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.wechat-donation .donation-button:hover {
+  background: #059B4E;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.donation-image {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  display: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  background: white;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.alipay-donation:hover .donation-image,
+.wechat-donation:hover .donation-image {
+  display: block;
+}
+
+.donation-image img {
+  max-width: 300px;
+  max-height: 300px;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* 调整微信打赏图片的位置，避免被遮挡 */
+.wechat-donation .donation-image {
+  right: 0;
+  left: auto;
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-h);
+  font-family: 'TypeLand KhangXi Dict', Jigmo, sans-serif;
+}
+
+.search-container {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.search-button:hover {
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.search-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.results-container {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+}
+
+.results-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-h);
+}
+
+.results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.result-item {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  transition: all 0.2s ease-in-out;
+}
+
+.result-item:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.result-number {
+  display: inline-block;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  color: var(--text-muted);
+}
+
+.word {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.source {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.definition {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+.no-results {
+  margin-top: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0;
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+/* 版权信息样式 */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer a:hover {
+  color: var(--accent-bg);
+  text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  #center {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .search-container {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+
+  .results-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .search-input {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .search-button {
+    padding: 0.5rem 1rem;
+  }
+
+  .result-item {
+    padding: 0.75rem;
+  }
+}
