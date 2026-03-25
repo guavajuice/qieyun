@@ -33,13 +33,13 @@ function App() {
         <div className="alipay-donation">
           <button className="donation-button">支付寶打賞</button>
           <div className="donation-image">
-            <img src="/IMG_0287.JPG" alt="支付寶打賞" />
+            <img src="/qieyun/IMG_0287.JPG" alt="支付寶打賞" />
           </div>
         </div>
         <div className="wechat-donation">
           <button className="donation-button">微信打賞</button>
           <div className="donation-image">
-            <img src="/IMG_0661.JPG" alt="微信打賞" />
+            <img src="/qieyun/IMG_0661.JPG" alt="微信打賞" />
           </div>
         </div>
       </div>

@@ -135,7 +135,7 @@ export function searchDictionary(query) {
     return {
       source: '廣韵',
       word: item['廣韻字頭(覈校後)'],
-      definition: '<strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (item[qColumn] || '') + ' , <strong>補充</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['廣韻反切(覈校後)'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (item[qColumn] || '') + ' , <strong>補充</strong>: ' + (values[values.length - 1] || '')
     };
   });
 
@@ -148,7 +148,7 @@ export function searchDictionary(query) {
     return {
       source: '集韵',
       word: item['字頭'],
-      definition: '<strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
     };
   });
 
@@ -161,7 +161,7 @@ export function searchDictionary(query) {
     return {
       source: '王三',
       word: item['字頭'],
-      definition: '<strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
     };
   });
 
