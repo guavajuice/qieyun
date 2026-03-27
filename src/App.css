@@ -191,6 +191,7 @@
   border-radius: 6px;
   background: var(--bg);
   transition: all 0.2s ease-in-out;
+  font-family: system-ui, -apple-system, "PingFang HK", "PingFang SC", "PingFang TC", Jigmo, Jigmo2, Jigmo3, sans-serif;
 }
 
 .result-item:hover {
