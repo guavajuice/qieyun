@@ -2,22 +2,28 @@
 const kwarngHyunCSV = './data/kwarng_hyun.csv';
 const zhupHyunCSV = './data/zhup_hyun.csv';
 const hwerngSarmCSV = './data/hwerng_sarm.csv';
+const jierngkorHwerngluikCSV = './data/jierngkor_hwerngluik.csv';
+const jierngkorKwarksaaklierngCSV = './data/jierngkor_kwarksaaklierng.csv';
+const jierngkorHwarngkharnCSV = './data/jierngkor_hwarngkharn.csv';
 
 // 存储解析后的数据
 var kwarngHyunData = [];
 var zhupHyunData = [];
 var hwerngSarmData = [];
+var jierngkorHwerngluikData = [];
+var jierngkorKwarksaaklierngData = [];
+var jierngkorHwarngkharnData = [];
 
 // 解析CSV文件的函数，处理包含换行符的单元格
 function parseCSV(csvString) {
   var lines = [];
   var currentLine = '';
   var inQuotes = false;
-  
+
   // 处理包含换行符的单元格
   for (var i = 0; i < csvString.length; i++) {
     var char = csvString[i];
-    
+
     if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === '\n' && !inQuotes) {
@@ -25,15 +31,15 @@ function parseCSV(csvString) {
       currentLine = '';
       continue;
     }
-    
+
     currentLine += char;
   }
-  
+
   // 添加最后一行
   if (currentLine) {
     lines.push(currentLine);
   }
-  
+
   var headers = parseCSVLine(lines[0]);
   var data = [];
 
@@ -55,10 +61,10 @@ function parseCSVLine(line) {
   var result = [];
   var current = '';
   var inQuotes = false;
-  
+
   for (var i = 0; i < line.length; i++) {
     var char = line[i];
-    
+
     if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
@@ -72,7 +78,7 @@ function parseCSVLine(line) {
       current += char;
     }
   }
-  
+
   // 处理最后一个单元格
   if (current.charAt(0) === '"' && current.charAt(current.length - 1) === '"') {
     current = current.substring(1, current.length - 1);
@@ -107,6 +113,30 @@ export function initializeData() {
       })
       .then(function(text) {
         hwerngSarmData = parseCSV(text);
+        // 加载jierngkor_hwerngluik.csv (上古王力)
+        return fetch(jierngkorHwerngluikCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorHwerngluikData = parseCSV(text);
+        // 加载jierngkor_kwarksaaklierng.csv (上古郭锡良)
+        return fetch(jierngkorKwarksaaklierngCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorKwarksaaklierngData = parseCSV(text);
+        // 加载jierngkor_hwarngkharn.csv (上古黃侃)
+        return fetch(jierngkorHwarngkharnCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorHwarngkharnData = parseCSV(text);
         console.log('CSV文件加载成功');
         resolve();
       })
@@ -123,7 +153,8 @@ export function searchDictionary(query) {
     return [];
   }
 
-  var results = [];
+  var qieyunResults = [];
+  var shangguResults = [];
 
   // 搜索kwarng_hyun文件：A列作为查询字头，显示D,J,K,Q,R列
   var kwarngResults = kwarngHyunData.filter(function(item) {
@@ -135,7 +166,8 @@ export function searchDictionary(query) {
     return {
       source: '廣韵',
       word: item['廣韻字頭(覈校後)'],
-      definition: '<strong>反切</strong>: ' + (item['廣韻反切(覈校後)'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (item[qColumn] || '') + ' , <strong>補充</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['廣韻反切(覈校後)'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (item[qColumn] || '') + ' , <strong>補充</strong>: ' + (values[values.length - 1] || ''),
+      period: 'qieyun'
     };
   });
 
@@ -148,7 +180,8 @@ export function searchDictionary(query) {
     return {
       source: '集韵',
       word: item['字頭'],
-      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || ''),
+      period: 'qieyun'
     };
   });
 
@@ -161,14 +194,66 @@ export function searchDictionary(query) {
     return {
       source: '王三',
       word: item['字頭'],
-      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || '')
+      definition: '<strong>反切</strong>: ' + (item['反切'] || '') + ' , <strong>聲母</strong>: ' + (item['聲母擬音'] || '') + ' , <strong>韵母</strong>: ' + (item['韻母擬音'] || '') + ' , <strong>聲調</strong>: ' + (item['聲調'] || '') + ' , <strong>釋義</strong>: ' + (values[values.length - 1] || ''),
+      period: 'qieyun'
     };
   });
 
-  // 合并结果
-  results = results.concat(kwarngResults);
-  results = results.concat(zhupResults);
-  results = results.concat(hwerngResults);
+  // 搜索jierngkor_hwerngluik文件 (上古王力)：第一列查询，返回第二列韵部，第三列韵母
+  var jierngkorHwerngluikResults = jierngkorHwerngluikData.filter(function(item) {
+    return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var values = Object.values(item);
+    return {
+      source: '上古王力',
+      word: item['字'],
+      definition: '<strong>韻部</strong>: ' + (item['韻部'] || item['韵部'] || values[1] || '') + ' , <strong>韻母</strong>: ' + (item['韻母'] || item['韵母'] || values[2] || ''),
+      period: 'shanggu'
+    };
+  });
 
-  return results;
+  // 搜索jierngkor_kwarksaaklierng文件 (上古郭锡良)
+  // CSV列结构：原字頭,字頭,補充,古韻,擬音
+  var jierngkorKwarksaaklierngResults = jierngkorKwarksaaklierngData.filter(function(item) {
+    return item['字頭'] && item['字頭'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var bukau = item['補充'] || '';
+    var yunbu = item['古韻'] || '';
+    var yunmu = item['擬音'] || '';
+    return {
+      source: '上古郭錫良',
+      word: item['字頭'],
+      definition: '<strong>補充</strong>: ' + bukau + ' , <strong>韻部</strong>: ' + yunbu + ' , <strong>韻母</strong>: ' + yunmu,
+      period: 'shanggu'
+    };
+  });
+
+  // 搜索jierngkor_hwarngkharn文件 (上古黃侃)：第一列查询，返回第二列韵部，第三列韵母
+  var jierngkorHwarngkharnResults = jierngkorHwarngkharnData.filter(function(item) {
+    return item['字符'] && item['字符'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var values = Object.values(item);
+    return {
+      source: '上古黃侃',
+      word: item['字符'],
+      definition: '<strong>韻部</strong>: ' + (item['韵部'] || item['韻部'] || values[1] || '') + ' , <strong>韻母</strong>: ' + (item['韵母'] || item['韻母'] || values[2] || ''),
+      period: 'shanggu'
+    };
+  });
+
+  // 合并切韵结果
+  qieyunResults = qieyunResults.concat(kwarngResults);
+  qieyunResults = qieyunResults.concat(zhupResults);
+  qieyunResults = qieyunResults.concat(hwerngResults);
+
+  // 合并上古音结果
+  shangguResults = shangguResults.concat(jierngkorHwerngluikResults);
+  shangguResults = shangguResults.concat(jierngkorKwarksaaklierngResults);
+  shangguResults = shangguResults.concat(jierngkorHwarngkharnResults);
+
+  // 返回包含period标记的结果
+  return {
+    qieyun: qieyunResults,
+    shanggu: shangguResults
+  };
 }

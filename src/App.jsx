@@ -4,7 +4,7 @@ import './App.css'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [results, setResults] = useState([])
+  const [results, setResults] = useState({ qieyun: [], shanggu: [] })
   const [isLoading, setIsLoading] = useState(true)
 
   // 初始化数据
@@ -19,13 +19,17 @@ function App() {
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
-      setResults([])
+      setResults({ qieyun: [], shanggu: [] })
       return
     }
 
     const filteredResults = searchDictionary(searchTerm)
     setResults(filteredResults)
   }
+
+  const hasResults = results.qieyun.length > 0 || results.shanggu.length > 0;
+  const hasQieyun = results.qieyun.length > 0;
+  const hasShanggu = results.shanggu.length > 0;
 
   return (
     <>
@@ -69,19 +73,19 @@ function App() {
           <div className="loading">
             <p>正在加载数据...</p>
           </div>
-        ) : results.length > 0 ? (
+        ) : hasResults ? (
           <div className="results-container">
             <h2>搜索結果</h2>
             <ul className="results-list">
-              {(() => {
+              {hasQieyun && (() => {
                 const sourceCounts = {};
-                return results.map((item, index) => {
+                return results.qieyun.map((item, index) => {
                   if (!sourceCounts[item.source]) {
                     sourceCounts[item.source] = 0;
                   }
                   sourceCounts[item.source]++;
                   return (
-                    <li key={index} className="result-item">
+                    <li key={`qieyun-${index}`} className="result-item">
                       <span className="result-number">{sourceCounts[item.source]}. </span>
                       <span className="word">{item.word} </span>
                       <span className="source">{item.source}</span>
@@ -91,10 +95,39 @@ function App() {
                 });
               })()}
             </ul>
+
+            {hasShanggu && (
+              <>
+                <div className="results-divider">
+                  <span>以上为切韵音</span>
+                  <span className="divider-line"></span>
+                  <span>以下为上古音</span>
+                </div>
+                <ul className="results-list">
+                  {(() => {
+                    const sourceCounts = {};
+                    return results.shanggu.map((item, index) => {
+                      if (!sourceCounts[item.source]) {
+                        sourceCounts[item.source] = 0;
+                      }
+                      sourceCounts[item.source]++;
+                      return (
+                        <li key={`shanggu-${index}`} className="result-item">
+                          <span className="result-number">{sourceCounts[item.source]}. </span>
+                          <span className="word">{item.word} </span>
+                          <span className="source">{item.source}</span>
+                          <span className="definition" dangerouslySetInnerHTML={{ __html: item.definition }}></span>
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </>
+            )}
           </div>
-        ) : results.length === 0 && searchTerm ? (
+        ) : hasResults === false && searchTerm ? (
           <div className="no-results">
-            <p>未找到匹配的切韵</p>
+            <p>未找到匹配的結果</p>
           </div>
         ) : null}
       </section>
