@@ -5,6 +5,7 @@ const hwerngSarmCSV = './data/hwerng_sarm.csv';
 const jierngkorHwerngluikCSV = './data/jierngkor_hwerngluik.csv';
 const jierngkorKwarksaaklierngCSV = './data/jierngkor_kwarksaaklierng.csv';
 const jierngkorHwarngkharnCSV = './data/jierngkor_hwarngkharn.csv';
+const jierngkorToongdhoonghwarCSV = './data/jierngkor_toongdhoonghwar.csv';
 
 // 存储解析后的数据
 var kwarngHyunData = [];
@@ -13,6 +14,7 @@ var hwerngSarmData = [];
 var jierngkorHwerngluikData = [];
 var jierngkorKwarksaaklierngData = [];
 var jierngkorHwarngkharnData = [];
+var jierngkorToongdhoonghwarData = [];
 
 // 解析CSV文件的函数，处理包含换行符的单元格
 function parseCSV(csvString) {
@@ -137,6 +139,16 @@ export function initializeData() {
       })
       .then(function(text) {
         jierngkorHwarngkharnData = parseCSV(text);
+        // 加载jierngkor_toongdhoonghwar.csv (上古董同龢)
+        return fetch(jierngkorToongdhoonghwarCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorToongdhoonghwarData = parseCSV(text);
+        console.log('jierngkorToongdhoonghwarData first item:', jierngkorToongdhoonghwarData[0]);
+        console.log('jierngkorToongdhoonghwarData keys:', Object.keys(jierngkorToongdhoonghwarData[0] || {}));
         console.log('CSV文件加载成功');
         resolve();
       })
@@ -241,6 +253,24 @@ export function searchDictionary(query) {
     };
   });
 
+  // 搜索jierngkor_toongdhoonghwar文件 (上古董同龢)：第二列查询，返回第三列韻部，第四列韻母
+  // CSV列结构：字號,字,韻部,韻母
+  var jierngkorToongdhoonghwarResults = jierngkorToongdhoonghwarData.filter(function(item) {
+    return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var values = Object.values(item);
+    console.log('Toongdhoonghwar item:', item);
+    console.log('Toongdhoonghwar values:', values);
+    var yunbu = item['韻部'] || values[2] || '';
+    var yunmu = item['韻母'] || values[3] || '';
+    return {
+      source: '上古董同龢',
+      word: item['字'],
+      definition: '<strong>韻部</strong>: ' + yunbu + ' , <strong>韻母</strong>: ' + yunmu,
+      period: 'shanggu'
+    };
+  });
+
   // 合并切韵结果
   qieyunResults = qieyunResults.concat(kwarngResults);
   qieyunResults = qieyunResults.concat(zhupResults);
@@ -250,6 +280,7 @@ export function searchDictionary(query) {
   shangguResults = shangguResults.concat(jierngkorHwerngluikResults);
   shangguResults = shangguResults.concat(jierngkorKwarksaaklierngResults);
   shangguResults = shangguResults.concat(jierngkorHwarngkharnResults);
+  shangguResults = shangguResults.concat(jierngkorToongdhoonghwarResults);
 
   // 返回包含period标记的结果
   return {
