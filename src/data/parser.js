@@ -6,6 +6,7 @@ const jierngkorHwerngluikCSV = './data/jierngkor_hwerngluik.csv';
 const jierngkorKwarksaaklierngCSV = './data/jierngkor_kwarksaaklierng.csv';
 const jierngkorHwarngkharnCSV = './data/jierngkor_hwarngkharn.csv';
 const jierngkorToongdhoonghwarCSV = './data/jierngkor_toongdhoonghwar.csv';
+const changhetuYAML = './data/changhetu.dict.yaml';
 
 // 存储解析后的数据
 var kwarngHyunData = [];
@@ -15,6 +16,7 @@ var jierngkorHwerngluikData = [];
 var jierngkorKwarksaaklierngData = [];
 var jierngkorHwarngkharnData = [];
 var jierngkorToongdhoonghwarData = [];
+var changhetuData = [];
 
 // 解析CSV文件的函数，处理包含换行符的单元格
 function parseCSV(csvString) {
@@ -89,6 +91,40 @@ function parseCSVLine(line) {
   return result;
 }
 
+// 解析YAML词典文件的函数
+function parseYAMLDict(yamlString) {
+  var lines = yamlString.split('\n');
+  var data = [];
+  var inData = false;
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    
+    if (line === '...') {
+      inData = true;
+      continue;
+    }
+    
+    if (!inData) {
+      continue;
+    }
+    
+    if (!line || line.startsWith('#')) {
+      continue;
+    }
+    
+    var parts = line.split('\t');
+    if (parts.length >= 2) {
+      data.push({
+        '字': parts[0].trim(),
+        '讀音': parts[1].trim()
+      });
+    }
+  }
+  
+  return data;
+}
+
 // 初始化函数，用于加载和解析CSV文件
 export function initializeData() {
   return new Promise(function(resolve, reject) {
@@ -147,8 +183,14 @@ export function initializeData() {
       })
       .then(function(text) {
         jierngkorToongdhoonghwarData = parseCSV(text);
-        console.log('jierngkorToongdhoonghwarData first item:', jierngkorToongdhoonghwarData[0]);
-        console.log('jierngkorToongdhoonghwarData keys:', Object.keys(jierngkorToongdhoonghwarData[0] || {}));
+        // 加载changhetu.dict.yaml (聲音唱和圖)
+        return fetch(changhetuYAML);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        changhetuData = parseYAMLDict(text);
         console.log('CSV文件加载成功');
         resolve();
       })
@@ -259,14 +301,24 @@ export function searchDictionary(query) {
     return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
   }).map(function(item, index) {
     var values = Object.values(item);
-    console.log('Toongdhoonghwar item:', item);
-    console.log('Toongdhoonghwar values:', values);
     var yunbu = item['韻部'] || values[2] || '';
     var yunmu = item['韻母'] || values[3] || '';
     return {
       source: '上古董同龢',
       word: item['字'],
       definition: '<strong>韻部</strong>: ' + yunbu + ' , <strong>韻母</strong>: ' + yunmu,
+      period: 'shanggu'
+    };
+  });
+
+  // 搜索changhetu文件 (聲音唱和圖)：第一列查询，返回第二列讀音
+  var changhetuResults = changhetuData.filter(function(item) {
+    return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    return {
+      source: '聲音唱和圖',
+      word: item['字'],
+      definition: '<strong>讀音</strong>: ' + (item['讀音'] || ''),
       period: 'shanggu'
     };
   });
@@ -281,6 +333,7 @@ export function searchDictionary(query) {
   shangguResults = shangguResults.concat(jierngkorKwarksaaklierngResults);
   shangguResults = shangguResults.concat(jierngkorHwarngkharnResults);
   shangguResults = shangguResults.concat(jierngkorToongdhoonghwarResults);
+  shangguResults = shangguResults.concat(changhetuResults);
 
   // 返回包含period标记的结果
   return {

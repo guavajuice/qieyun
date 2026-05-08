@@ -201,6 +201,18 @@
   max-width: 100px;
 }
 
+.inner-divider {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.inner-divider .divider-line {
+  max-width: 200px;
+}
+
 .result-item {
   padding: 1rem;
   border: 1px solid var(--border);

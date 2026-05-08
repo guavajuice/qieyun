@@ -106,18 +106,32 @@ function App() {
                 <ul className="results-list">
                   {(() => {
                     const sourceCounts = {};
+                    let firstChanghetuIndex = -1;
+                    results.shanggu.forEach((item, index) => {
+                      if (item.source === '聲音唱和圖' && firstChanghetuIndex === -1) {
+                        firstChanghetuIndex = index;
+                      }
+                    });
                     return results.shanggu.map((item, index) => {
                       if (!sourceCounts[item.source]) {
                         sourceCounts[item.source] = 0;
                       }
                       sourceCounts[item.source]++;
+                      const showDivider = index === firstChanghetuIndex && firstChanghetuIndex !== -1;
                       return (
-                        <li key={`shanggu-${index}`} className="result-item">
-                          <span className="result-number">{sourceCounts[item.source]}. </span>
-                          <span className="word">{item.word} </span>
-                          <span className="source">{item.source}</span>
-                          <span className="definition" dangerouslySetInnerHTML={{ __html: item.definition }}></span>
-                        </li>
+                        <>
+                          {showDivider && (
+                            <li key={`changhetu-divider-${index}`} className="inner-divider">
+                              <span className="divider-line"></span>
+                            </li>
+                          )}
+                          <li key={`shanggu-${index}`} className="result-item">
+                            <span className="result-number">{sourceCounts[item.source]}. </span>
+                            <span className="word">{item.word} </span>
+                            <span className="source">{item.source}</span>
+                            <span className="definition" dangerouslySetInnerHTML={{ __html: item.definition }}></span>
+                          </li>
+                        </>
                       );
                     });
                   })()}
