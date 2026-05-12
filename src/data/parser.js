@@ -6,6 +6,8 @@ const jierngkorHwerngluikCSV = './data/jierngkor_hwerngluik.csv';
 const jierngkorKwarksaaklierngCSV = './data/jierngkor_kwarksaaklierng.csv';
 const jierngkorHwarngkharnCSV = './data/jierngkor_hwarngkharn.csv';
 const jierngkorToongdhoonghwarCSV = './data/jierngkor_toongdhoonghwar.csv';
+const jierngkorLuypwerngkwaayCSV = './data/jierngkor_luypwerngkwaay.csv';
+const jierngkorTcoewpoepkarwCSV = './data/jierngkor_tcoewpoepkarw.csv';
 const changhetuYAML = './data/changhetu.dict.yaml';
 
 // 存储解析后的数据
@@ -16,6 +18,8 @@ var jierngkorHwerngluikData = [];
 var jierngkorKwarksaaklierngData = [];
 var jierngkorHwarngkharnData = [];
 var jierngkorToongdhoonghwarData = [];
+var jierngkorLuypwerngkwaayData = [];
+var jierngkorTcoewpoepkarwData = [];
 var changhetuData = [];
 
 // 解析CSV文件的函数，处理包含换行符的单元格
@@ -183,6 +187,22 @@ export function initializeData() {
       })
       .then(function(text) {
         jierngkorToongdhoonghwarData = parseCSV(text);
+        // 加载jierngkor_luypwerngkwaay.csv (上古李方桂)
+        return fetch(jierngkorLuypwerngkwaayCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorLuypwerngkwaayData = parseCSV(text);
+        // 加载jierngkor_tcoewpoepkarw.csv (上古周法高)
+        return fetch(jierngkorTcoewpoepkarwCSV);
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        jierngkorTcoewpoepkarwData = parseCSV(text);
         // 加载changhetu.dict.yaml (聲音唱和圖)
         return fetch(changhetuYAML);
       })
@@ -311,6 +331,36 @@ export function searchDictionary(query) {
     };
   });
 
+  // 搜索jierngkor_luypwerngkwaay文件 (上古李方桂)：第二列查询，返回第三列韻部，第四列韻母
+  var jierngkorLuypwerngkwaayResults = jierngkorLuypwerngkwaayData.filter(function(item) {
+    return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var values = Object.values(item);
+    var yunbu = item['韻部'] || values[2] || '';
+    var yunmu = item['韻母'] || values[3] || '';
+    return {
+      source: '上古李方桂',
+      word: item['字'],
+      definition: '<strong>韻部</strong>: ' + yunbu + ' , <strong>韻母</strong>: ' + yunmu,
+      period: 'shanggu'
+    };
+  });
+
+  // 搜索jierngkor_tcoewpoepkarw文件 (上古周法高)：第二列查询，返回第三列韻部，第四列韻母
+  var jierngkorTcoewpoepkarwResults = jierngkorTcoewpoepkarwData.filter(function(item) {
+    return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
+  }).map(function(item, index) {
+    var values = Object.values(item);
+    var yunbu = item['韻部'] || values[2] || '';
+    var yunmu = item['韻母'] || values[3] || '';
+    return {
+      source: '上古周法高',
+      word: item['字'],
+      definition: '<strong>韻部</strong>: ' + yunbu + ' , <strong>韻母</strong>: ' + yunmu,
+      period: 'shanggu'
+    };
+  });
+
   // 搜索changhetu文件 (聲音唱和圖)：第一列查询，返回第二列讀音
   var changhetuResults = changhetuData.filter(function(item) {
     return item['字'] && item['字'].toLowerCase().includes(query.toLowerCase());
@@ -328,11 +378,13 @@ export function searchDictionary(query) {
   qieyunResults = qieyunResults.concat(zhupResults);
   qieyunResults = qieyunResults.concat(hwerngResults);
 
-  // 合并上古音结果
+  // 合并上古音结果（按顺序：王力、郭锡良、黄侃、董同龢、李方桂、周法高、聲音唱和圖）
   shangguResults = shangguResults.concat(jierngkorHwerngluikResults);
   shangguResults = shangguResults.concat(jierngkorKwarksaaklierngResults);
   shangguResults = shangguResults.concat(jierngkorHwarngkharnResults);
   shangguResults = shangguResults.concat(jierngkorToongdhoonghwarResults);
+  shangguResults = shangguResults.concat(jierngkorLuypwerngkwaayResults);
+  shangguResults = shangguResults.concat(jierngkorTcoewpoepkarwResults);
   shangguResults = shangguResults.concat(changhetuResults);
 
   // 返回包含period标记的结果
