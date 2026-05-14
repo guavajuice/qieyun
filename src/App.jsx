@@ -28,23 +28,45 @@ function App() {
   }
 
   const handleRandom = () => {
-    const codePoints = [];
+    // Unicode汉字各区域范围
+    const ranges = [
+      { start: 19968, end: 40959 },   // 基本区: U+4E00-U+9FFF
+      { start: 13312, end: 19903 },   // 扩展A区: U+3400-U+4DBF
+      { start: 131072, end: 173791 }, // 扩展B区: U+20000-U+2A6DF
+      { start: 173824, end: 177983 }, // 扩展C区: U+2A700-U+2B73F
+      { start: 177984, end: 178207 }, // 扩展D区: U+2B740-U+2B81F
+      { start: 178208, end: 183983 }, // 扩展E区: U+2B820-U+2CEAF
+      { start: 183984, end: 191471 }, // 扩展F区: U+2CEB0-U+2EBEF
+      { start: 196608, end: 201551 }, // 扩展G区: U+30000-U+3134F
+      { start: 201552, end: 205743 }, // 扩展H区: U+31350-U+323AF
+      { start: 191472, end: 192095 }, // 扩展I区: U+2EBF0-U+2EE5F
+      { start: 205744, end: 205823 }, // 扩展J区: U+323B0-U+323FF
+    ];
     
-    // Unicode汉字基本区: U+4E00 (19968) 到 U+9FFF (40959)
-    for (let i = 19968; i <= 40959; i++) {
-      codePoints.push(i);
-    }
-    
-    // Unicode汉字扩展A区: U+3400 (13312) 到 U+4DBF (19903)
-    for (let i = 13312; i <= 19903; i++) {
-      codePoints.push(i);
-    }
+    // 计算总码点数
+    let total = 0;
+    ranges.forEach(range => {
+      total += range.end - range.start + 1;
+    });
     
     // 使用密码学安全的伪随机数生成器
     const array = new Uint32Array(1);
     crypto.getRandomValues(array);
-    const randomIndex = array[0] % codePoints.length;
-    const randomCodePoint = codePoints[randomIndex];
+    const randomOffset = array[0] % total;
+    
+    // 找到对应的范围并计算具体码点
+    let currentOffset = 0;
+    let randomCodePoint = 0;
+    for (let i = 0; i < ranges.length; i++) {
+      const range = ranges[i];
+      const rangeSize = range.end - range.start + 1;
+      if (currentOffset + rangeSize > randomOffset) {
+        randomCodePoint = range.start + (randomOffset - currentOffset);
+        break;
+      }
+      currentOffset += rangeSize;
+    }
+    
     const randomChar = String.fromCodePoint(randomCodePoint);
     
     // 设置搜索词并执行搜索
